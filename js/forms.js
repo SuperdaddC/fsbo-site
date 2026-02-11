@@ -2,6 +2,21 @@
 const SUPABASE_URL = 'https://apuctuqlmykeemtcasji.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFwdWN0dXFsbXlrZWVtdGNhc2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODY5NjMsImV4cCI6MjA3NTM2Mjk2M30.Kyjei2lczrVkFJkOzI8ViLEc-qiOBPrv5TtT6G33MHU';
 
+// Notify server-side webhook when new lead comes in
+async function notifyLead(leadType, data) {
+  const name = `${data.firstName || data.first_name || ''} ${data.lastName || data.last_name || ''}`.trim() || 'Unknown';
+  const email = data.email || 'no email';
+  const phone = data.phone || 'no phone';
+  const property = data.propertyAddress || data.property_address || data.address || '';
+  try {
+    await fetch('https://ip-172-31-2-122.tail991214.ts.net/fsbo-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lead_type: leadType, name, email, phone, property })
+    });
+  } catch(e) { /* silent fail */ }
+}
+
 async function submitToSupabase(leadType, data) {
   const payload = {
     source: 'fsbo-site',
@@ -75,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if (ok) {
       form.style.display = 'none';
       form.parentElement.querySelector('.form-success').style.display = 'block';
+      notifyLead('contact', data);
     } else {
       btn.disabled = false;
       btn.textContent = 'Send Message';
@@ -98,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if (ok) {
       form.style.display = 'none';
       form.parentElement.querySelector('.form-success').style.display = 'block';
+      notifyLead('buyer', data);
     } else {
       btn.disabled = false;
       btn.textContent = 'Get Pre-Qualified';
@@ -121,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if (ok) {
       form.style.display = 'none';
       form.parentElement.querySelector('.form-success').style.display = 'block';
+      notifyLead('seller', data);
     } else {
       btn.disabled = false;
       btn.textContent = 'Request Consultation';
