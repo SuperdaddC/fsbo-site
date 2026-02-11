@@ -16,8 +16,6 @@ Sub ExportContactsToCSV()
     Dim olNS As Outlook.NameSpace
     Dim olFolder As Outlook.MAPIFolder
     Dim olContact As Object
-    Dim fso As Object
-    Dim ts As Object
     Dim savePath As Variant
     Dim headerWritten As Boolean
     Dim headers As String
@@ -48,7 +46,7 @@ Sub ExportContactsToCSV()
     ' Save dialog
     savePath = InputBox("Enter the full file path to save the CSV:" & vbCrLf & vbCrLf & _
         "Example: C:\Users\Mike\Desktop\contacts_export.csv", _
-        "Save CSV", "C:\Users\Mike\Desktop\contacts_export.csv")
+        "Save CSV", "C:\Users\ColyerTeam\Desktop\contacts_export.csv")
     
     If savePath = "" Then
         MsgBox "No save path entered. Exiting.", vbInformation
@@ -127,8 +125,10 @@ Sub ExportContactsToCSV()
     Next key
     
     ' ---- WRITE CSV ----
-    Set fso = CreateObject("Scripting.FileSystemObject")
-    Set ts = fso.CreateTextFile(savePath, True, True) ' True=overwrite, True=Unicode
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    Open savePath For Output As #fileNum
     
     ' Write header
     headers = ""
@@ -136,7 +136,7 @@ Sub ExportContactsToCSV()
         If i > 0 Then headers = headers & ","
         headers = headers & EscapeCSV(headerArr(i))
     Next i
-    ts.WriteLine headers
+    Print #fileNum, headers
     
     ' ---- SECOND PASS: Export data ----
     contactCount = 0
@@ -188,15 +188,13 @@ Sub ExportContactsToCSV()
                 row = row & EscapeCSV(fieldValue)
             Next i
             
-            ts.WriteLine row
+            Print #fileNum, row
             contactCount = contactCount + 1
             If isCustom Then customCount = customCount + 1
         End If
     Next olContact
     
-    ts.Close
-    Set ts = Nothing
-    Set fso = Nothing
+    Close #fileNum
     
     MsgBox "Export complete!" & vbCrLf & vbCrLf & _
         "Total contacts: " & contactCount & vbCrLf & _
