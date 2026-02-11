@@ -1,0 +1,221 @@
+' ============================================================
+' Outlook Contact Export — Including User-Defined Fields
+' For custom form: IPM.Contact.ColyerTeamContactForm
+' ============================================================
+' HOW TO USE:
+' 1. Open Outlook
+' 2. Press Alt+F11 to open VBA Editor
+' 3. Insert > Module
+' 4. Paste this code
+' 5. Press F5 (or Run > Run Sub) — select ExportContactsToCSV
+' 6. Choose where to save the CSV
+' ============================================================
+
+Sub ExportContactsToCSV()
+    Dim olApp As Outlook.Application
+    Dim olNS As Outlook.NameSpace
+    Dim olFolder As Outlook.MAPIFolder
+    Dim olContact As Object
+    Dim fso As Object
+    Dim ts As Object
+    Dim savePath As Variant
+    Dim headerWritten As Boolean
+    Dim headers As String
+    Dim row As String
+    Dim i As Long
+    Dim prop As Object
+    Dim standardFields As Variant
+    Dim userFields As Object
+    Dim allHeaders As Collection
+    Dim allRows As Collection
+    Dim rowDict As Object
+    Dim key As Variant
+    Dim firstPass As Boolean
+    Dim masterHeaders As Object
+    Dim contactCount As Long
+    Dim customCount As Long
+    
+    Set olApp = Outlook.Application
+    Set olNS = olApp.GetNamespace("MAPI")
+    
+    ' Let user pick the contacts folder
+    Set olFolder = olNS.PickFolder
+    If olFolder Is Nothing Then
+        MsgBox "No folder selected. Exiting.", vbInformation
+        Exit Sub
+    End If
+    
+    ' Save dialog
+    savePath = InputBox("Enter the full file path to save the CSV:" & vbCrLf & vbCrLf & _
+        "Example: C:\Users\Mike\Desktop\contacts_export.csv", _
+        "Save CSV", "C:\Users\Mike\Desktop\contacts_export.csv")
+    
+    If savePath = "" Then
+        MsgBox "No save path entered. Exiting.", vbInformation
+        Exit Sub
+    End If
+    
+    ' Standard Outlook contact fields
+    standardFields = Array( _
+        "MessageClass", "FullName", "FirstName", "MiddleName", "LastName", _
+        "Title", "Suffix", "CompanyName", "Department", "JobTitle", _
+        "Email1Address", "Email1DisplayName", "Email2Address", "Email3Address", _
+        "BusinessTelephoneNumber", "Business2TelephoneNumber", _
+        "HomeTelephoneNumber", "Home2TelephoneNumber", _
+        "MobileTelephoneNumber", "OtherTelephoneNumber", _
+        "PagerNumber", "BusinessFaxNumber", "HomeFaxNumber", _
+        "BusinessAddressStreet", "BusinessAddressCity", "BusinessAddressState", _
+        "BusinessAddressPostalCode", "BusinessAddressCountry", _
+        "HomeAddressStreet", "HomeAddressCity", "HomeAddressState", _
+        "HomeAddressPostalCode", "HomeAddressCountry", _
+        "OtherAddressStreet", "OtherAddressCity", "OtherAddressState", _
+        "OtherAddressPostalCode", "OtherAddressCountry", _
+        "WebPage", "IMAddress", "NickName", "Spouse", _
+        "Birthday", "Anniversary", _
+        "Body", "Categories", "Sensitivity", "Importance", _
+        "CreationTime", "LastModificationTime", _
+        "FileAs", "Account", "CustomerID", _
+        "ReferredBy", "AssistantName", "AssistantTelephoneNumber", _
+        "ManagerName", "OfficeLocation", "Profession", _
+        "Children", "Hobby", "User1", "User2", "User3", "User4", _
+        "BillingInformation", "Mileage", "NetMeetingAlias" _
+    )
+    
+    ' ---- FIRST PASS: Collect all user-defined field names from custom contacts ----
+    Set masterHeaders = CreateObject("Scripting.Dictionary")
+    
+    ' Add standard fields first
+    For i = LBound(standardFields) To UBound(standardFields)
+        masterHeaders(standardFields(i)) = True
+    Next i
+    
+    ' Scan for user-defined fields
+    For Each olContact In olFolder.Items
+        If TypeName(olContact) = "ContactItem" Then
+            If olContact.MessageClass = "IPM.Contact.ColyerTeamContactForm" Then
+                Dim props As Outlook.ItemProperties
+                Set props = olContact.ItemProperties
+                Dim p As Long
+                For p = 0 To props.Count - 1
+                    Dim propName As String
+                    propName = props.Item(p).Name
+                    If Not masterHeaders.exists(propName) Then
+                        ' Skip internal/system properties
+                        If Left(propName, 1) <> "{" And _
+                           Left(propName, 5) <> "http:" And _
+                           Left(propName, 4) <> "urn:" And _
+                           InStr(propName, "GUID") = 0 Then
+                            masterHeaders(propName) = True
+                        End If
+                    End If
+                Next p
+                Set props = Nothing
+            End If
+        End If
+    Next olContact
+    
+    ' ---- BUILD HEADER ROW ----
+    Dim headerArr() As String
+    Dim headerCount As Long
+    headerCount = masterHeaders.Count
+    ReDim headerArr(0 To headerCount - 1)
+    
+    i = 0
+    For Each key In masterHeaders.Keys
+        headerArr(i) = CStr(key)
+        i = i + 1
+    Next key
+    
+    ' ---- WRITE CSV ----
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    Set ts = fso.CreateTextFile(savePath, True, True) ' True=overwrite, True=Unicode
+    
+    ' Write header
+    headers = ""
+    For i = 0 To headerCount - 1
+        If i > 0 Then headers = headers & ","
+        headers = headers & EscapeCSV(headerArr(i))
+    Next i
+    ts.WriteLine headers
+    
+    ' ---- SECOND PASS: Export data ----
+    contactCount = 0
+    customCount = 0
+    
+    For Each olContact In olFolder.Items
+        If TypeName(olContact) = "ContactItem" Then
+            Dim isCustom As Boolean
+            isCustom = (olContact.MessageClass = "IPM.Contact.ColyerTeamContactForm")
+            
+            row = ""
+            For i = 0 To headerCount - 1
+                If i > 0 Then row = row & ","
+                
+                Dim fieldValue As String
+                fieldValue = ""
+                
+                ' Try to get the value
+                On Error Resume Next
+                
+                ' First try as a standard property
+                Dim testVal As Variant
+                testVal = CallByName(olContact, headerArr(i), VbGet)
+                If Err.Number = 0 Then
+                    fieldValue = CStr(testVal)
+                Else
+                    Err.Clear
+                    ' Try ItemProperties
+                    If isCustom Then
+                        Dim itemProp As Outlook.ItemProperty
+                        Set itemProp = olContact.ItemProperties.Item(headerArr(i))
+                        If Err.Number = 0 Then
+                            If Not itemProp Is Nothing Then
+                                fieldValue = CStr(itemProp.Value)
+                            End If
+                        End If
+                        Err.Clear
+                        Set itemProp = Nothing
+                    End If
+                End If
+                
+                On Error GoTo 0
+                
+                ' Clean up date fields
+                If fieldValue = "1/1/4501" Or fieldValue = "1/1/4501 12:00:00 AM" Then
+                    fieldValue = ""
+                End If
+                
+                row = row & EscapeCSV(fieldValue)
+            Next i
+            
+            ts.WriteLine row
+            contactCount = contactCount + 1
+            If isCustom Then customCount = customCount + 1
+        End If
+    Next olContact
+    
+    ts.Close
+    Set ts = Nothing
+    Set fso = Nothing
+    
+    MsgBox "Export complete!" & vbCrLf & vbCrLf & _
+        "Total contacts: " & contactCount & vbCrLf & _
+        "Custom form contacts: " & customCount & vbCrLf & _
+        "Total columns: " & headerCount & vbCrLf & vbCrLf & _
+        "Saved to: " & savePath, vbInformation, "Export Done"
+    
+End Sub
+
+Function EscapeCSV(val As String) As String
+    ' Handle CSV escaping — wrap in quotes if contains comma, quote, or newline
+    Dim s As String
+    s = Replace(val, vbCrLf, " ")
+    s = Replace(s, vbLf, " ")
+    s = Replace(s, vbCr, " ")
+    
+    If InStr(s, ",") > 0 Or InStr(s, """") > 0 Or InStr(s, vbTab) > 0 Then
+        s = """" & Replace(s, """", """""") & """"
+    End If
+    
+    EscapeCSV = s
+End Function
