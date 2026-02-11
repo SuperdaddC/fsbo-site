@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For FSBO Sellers — Free Tools, Calculators & Listing Options | FSBO Help CA</title>
+  <meta name="description" content="FSBO seller tools: compare your net proceeds, estimate your home value, and explore listing options from free support to full-service agents.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container">
+      <a href="index.html" class="logo">🏠 FSBO<span>Help</span>CA</a>
+      <button class="mobile-toggle" aria-label="Menu">☰</button>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="sellers.html" class="active">For Sellers</a>
+        <a href="buyers.html">For Buyers</a>
+        <a href="about.html">About</a>
+        <a href="https://outlook.office365.com/owa/calendar/MeetingWithMike@NETORG19778106.onmicrosoft.com/bookings/" target="_blank" class="btn btn-primary btn-sm">Schedule a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" style="padding-bottom:60px">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">🏡 For FSBO Sellers</div>
+        <h1>We Respect the <em>FSBO Hustle.</em></h1>
+        <p>You've decided to sell your home yourself — and we think that's great. Here are free tools to help you succeed, plus options if you want support along the way.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FSBO VS LISTED CALCULATOR -->
+  <section class="section" id="calculator">
+    <div class="container">
+      <div class="section-header">
+        <div class="label">Interactive Tool</div>
+        <h2>FSBO vs. Listed: What Would You Actually Net?</h2>
+        <p>Slide to your home's value and see the real difference in your pocket.</p>
+      </div>
+
+      <div class="calc-container fade-up">
+        <div class="calc-header">
+          <h3>💰 Net Proceeds Calculator</h3>
+          <p>Based on NAR data: FSBO homes sell for ~23% less on average. Agent commission assumed at 5%.</p>
+        </div>
+        <div class="calc-body">
+          <div class="calc-input-group">
+            <label>Your Home's Market Value</label>
+            <div class="range-value" id="homeValueDisplay">$500,000</div>
+            <input type="range" id="homeValueSlider" min="100000" max="2000000" step="10000" value="500000">
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--gray-500)">
+              <span>$100K</span><span>$2M</span>
+            </div>
+          </div>
+
+          <div class="calc-results">
+            <div class="calc-result-card fsbo">
+              <h4>🏷️ FSBO (Sell Yourself)</h4>
+              <div class="amount" id="fsboSalePrice">$385,000</div>
+              <div class="detail">Estimated sale price (23% less)</div>
+              <div style="margin-top:12px;font-size:.9rem">
+                <strong>Net to You:</strong> <span id="fsboNet" style="font-size:1.2rem">$385,000</span>
+              </div>
+              <div class="detail">No commission paid</div>
+              <div style="margin-top:8px;font-size:.9rem;color:var(--gray-500)">
+                Avg days on market: <strong id="fsboDays">~68 days</strong>
+              </div>
+            </div>
+            <div class="calc-result-card listed">
+              <h4>🏠 Listed with Agent</h4>
+              <div class="amount" id="listedSalePrice">$500,000</div>
+              <div class="detail">Full market value</div>
+              <div style="margin-top:12px;font-size:.9rem">
+                <strong>Net to You:</strong> <span id="listedNet" style="font-size:1.2rem">$475,000</span>
+              </div>
+              <div class="detail">After <span id="listedCommission">$25,000</span> commission (5%)</div>
+              <div style="margin-top:8px;font-size:.9rem;color:var(--gray-500)">
+                Avg days on market: <strong id="listedDays">~47 days</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-comparison">
+            <div>By listing with an agent, you could net</div>
+            <div class="big" id="netDifference">$90,000</div>
+            <div><span id="diffDirection">more</span> — even after paying commission</div>
+          </div>
+
+          <div class="calc-bar-chart" style="margin-top:32px">
+            <h4 style="margin-bottom:16px;color:var(--navy)">Visual Comparison: Net Proceeds</h4>
+            <div class="calc-bar-row">
+              <div class="calc-bar-label">FSBO</div>
+              <div class="calc-bar-track">
+                <div class="calc-bar-fill fsbo" id="fsboBar" style="width:81%">$385,000</div>
+              </div>
+            </div>
+            <div class="calc-bar-row">
+              <div class="calc-bar-label">Listed</div>
+              <div class="calc-bar-track">
+                <div class="calc-bar-fill listed" id="listedBar" style="width:100%">$475,000</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align:center;margin-top:28px">
+            <a href="https://outlook.office365.com/owa/calendar/MeetingWithMike@NETORG19778106.onmicrosoft.com/bookings/" target="_blank" class="btn btn-primary btn-lg">📅 Let's Discuss Your Options — Free Call</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOME WORTH ESTIMATOR -->
+  <section class="section section-alt" id="worth">
+    <div class="container">
+      <div class="section-header">
+        <div class="label">Free Tool</div>
+        <h2>What's My Home Worth?</h2>
+        <p>Get a quick estimate. We'll follow up with a detailed comparative market analysis.</p>
+      </div>
+
+      <div class="calc-container worth-calc fade-up">
+        <div class="calc-header">
+          <h3>🏠 Home Value Estimator</h3>
+          <p>Enter your property details for an instant rough estimate.</p>
+        </div>
+        <div class="calc-body">
+          <form id="worthForm" name="worth-estimate" data-netlify="true">
+            <div class="form-grid">
+              <div class="form-group full">
+                <label>Property Address</label>
+                <input type="text" name="address" placeholder="123 Main St, City, CA 90000" required>
+              </div>
+              <div class="form-group">
+                <label>Bedrooms</label>
+                <select name="beds">
+                  <option value="1">1</option><option value="2">2</option>
+                  <option value="3" selected>3</option><option value="4">4</option>
+                  <option value="5">5+</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Bathrooms</label>
+                <select name="baths">
+                  <option value="1">1</option><option value="2" selected>2</option>
+                  <option value="3">3</option><option value="4">4+</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Square Footage</label>
+                <input type="number" name="sqft" placeholder="1,500" min="200" max="20000" required>
+              </div>
+              <div class="form-group">
+                <label>Your Email</label>
+                <input type="email" name="email" placeholder="you@email.com" required>
+              </div>
+              <div class="form-group full" style="text-align:center">
+                <button type="submit" class="btn btn-primary btn-lg">Get My Estimate →</button>
+              </div>
+            </div>
+          </form>
+
+          <div id="worthResult" style="display:none;text-align:center;padding:24px;background:var(--off-white);border-radius:var(--radius);margin-top:16px">
+            <h3 style="color:var(--navy)">Estimated Value Range</h3>
+            <div style="font-size:2.2rem;font-weight:800;color:var(--navy);margin:12px 0">
+              <span id="worthLow">$450,000</span> — <span id="worthHigh">$675,000</span>
+            </div>
+            <p id="worthNote" style="display:none;color:var(--gray-500);font-size:.9rem;margin-top:8px">
+              This is a rough estimate based on California averages. We'll send you a detailed CMA (Comparative Market Analysis) within 24 hours.
+            </p>
+            <a href="https://outlook.office365.com/owa/calendar/MeetingWithMike@NETORG19778106.onmicrosoft.com/bookings/" target="_blank" class="btn btn-secondary" style="margin-top:16px">📅 Get a Precise Valuation — Schedule a Call</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LISTING TIERS -->
+  <section class="section" id="tiers">
+    <div class="container">
+      <div class="section-header">
+        <div class="label">Your Options</div>
+        <h2>Choose Your Level of Support</h2>
+        <p>From free help to full-service — we meet you where you are.</p>
+      </div>
+
+      <div class="tiers fade-up">
+        <!-- Tier 1 -->
+        <div class="tier-card">
+          <h3>FSBO Support</h3>
+          <div class="price">Free <small>no cost, no catch</small></div>
+          <ul>
+            <li>We pre-qualify buyers interested in your home</li>
+            <li>Send qualified, vetted buyers directly to you</li>
+            <li>Basic selling guidance & tips</li>
+            <li>Access to our FSBO toolkit</li>
+            <li>No obligation, no contracts</li>
+          </ul>
+          <a href="https://outlook.office365.com/owa/calendar/MeetingWithMike@NETORG19778106.onmicrosoft.com/bookings/" target="_blank" class="btn btn-secondary btn-block">Get Free Support →</a>
+        </div>
+
+        <!-- Tier 2 -->
+        <div class="tier-card featured">
+          <h3>Flat-Fee MLS Listing</h3>
+          <div class="price">$499 <small>flat fee</small></div>
+          <ul>
+            <li>Everything in FSBO Support</li>
+            <li>Listed on MLS (maximum exposure)</li>
+            <li>Syndicated to Zillow, Realtor.com, Redfin</li>
+            <li>Professional photography guidance</li>
+            <li>Contract review assistance</li>
+            <li>Limited agent support included</li>
+          </ul>
+          <a href="https://outlook.office365.com/owa/calendar/MeetingWithMike@NETORG19778106.onmicrosoft.com/bookings/" target="_blank" class="btn btn-primary btn-block">Get on MLS →</a>
+        </div>
+
+        <!-- Tier 3 -->
+        <div class="tier-card">
+          <h3>Full-Service Listing</h3>
+          <div class="price">Full Service <small>commission-based</small></div>
+          <ul>
+            <li>Professional agent from Select CA Homes</li>
+            <li>Team of 37 experienced agents</li>
+            <li>Full marketing & photography</li>
+            <li>Staging advice & open houses</li>
+            <li>Expert negotiation & closing</li>
+            <li>Typically nets MORE than FSBO (see calculator)</li>
+          </ul>
+          <a href="https://outlook.office365.com/owa/calendar/MeetingWithMike@NETORG19778106.onmicrosoft.com/bookings/" target="_blank" class="btn btn-secondary btn-block">Talk to an Agent →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT FORM -->
+  <section class="section section-alt" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <div class="label">Get in Touch</div>
+        <h2>Schedule a Free Consultation</h2>
+        <p>No pressure, no obligation. Let's talk about your home and your goals.</p>
+      </div>
+
+      <div class="form-card fade-up">
+        <form id="sellerForm" name="seller-consultation" data-netlify="true">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" name="firstName" required>
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" name="lastName" required>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="tel" name="phone">
+            </div>
+            <div class="form-group full">
+              <label>Property Address</label>
+              <input type="text" name="address" placeholder="123 Main St, City, CA">
+            </div>
+            <div class="form-group full">
+              <label>What's your biggest challenge selling FSBO?</label>
+              <textarea name="challenge" placeholder="Finding buyers, pricing, paperwork, marketing..."></textarea>
+            </div>
+            <div class="form-group full" style="text-align:center">
+              <button type="submit" class="btn btn-primary btn-lg">Send — I'd Like to Chat →</button>
+            </div>
+          </div>
+        </form>
+        <div class="form-success">
+          <div class="icon">✅</div>
+          <h3>We Got Your Message!</h3>
+          <p>Mike or a team member will reach out within 24 hours. In the meantime:</p>
+          <a href="https://outlook.office365.com/owa/calendar/MeetingWithMike@NETORG19778106.onmicrosoft.com/bookings/" target="_blank" class="btn btn-primary" style="margin-top:16px">📅 Or Schedule a Call Right Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Not Sure Which Option Is Right?</h2>
+      <p>A 15-minute call can clarify everything. No sales pitch — just honest advice from a 28-year veteran.</p>
+      <div class="ctas">
+        <a href="https://outlook.office365.com/owa/calendar/MeetingWithMike@NETORG19778106.onmicrosoft.com/bookings/" target="_blank" class="btn btn-primary btn-lg">📅 Book a Free Call</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>🏠 FSBO<span style="color:var(--gold)">Help</span>CA</h4>
+          <p>Expert mortgage and real estate support for FSBO sellers and buyers in California. The Colyer Team — 28 years of trusted service.</p>
+          <p style="margin-top:12px">Associated with <strong>Select California Homes</strong></p>
+        </div>
+        <div>
+          <h4>For Sellers</h4>
+          <ul>
+            <li><a href="sellers.html">Seller Resources</a></li>
+            <li><a href="sellers.html#calculator">FSBO vs Listed Calc</a></li>
+            <li><a href="sellers.html#worth">Home Value Estimate</a></li>
+            <li><a href="sellers.html#tiers">Listing Options</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>For Buyers</h4>
+          <ul>
+            <li><a href="buyers.html">Buyer Resources</a></li>
+            <li><a href="buyers.html#prequal">Pre-Qualification</a></li>
+            <li><a href="buyers.html#loans">Loan Types</a></li>
+            <li><a href="https://michaelcolyer.zipforhome.com/" target="_blank">Apply Online</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About Mike</a></li>
+            <li><a href="https://outlook.office365.com/owa/calendar/MeetingWithMike@NETORG19778106.onmicrosoft.com/bookings/" target="_blank">Schedule a Call</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-legal">
+          <span class="ehl-logo">⚖️ Equal Housing Lender</span>
+          <span>NMLS #276626 · DRE #01842442</span>
+          <span>Approved Mortgage · NMLS #2688301 · DRE #00904136</span>
+        </div>
+        <div>© 2026 The Colyer Team. All rights reserved.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/calculators.js"></script>
+  <script src="js/forms.js"></script>
+</body>
+</html>
