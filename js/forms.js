@@ -17,6 +17,37 @@ async function notifyLead(leadType, data) {
   } catch(e) { /* silent fail */ }
 }
 
+// Bot protection: check honeypot + basic validation
+function isBot(form) {
+  const hp = form.querySelector('input[name="company_url"]');
+  return hp && hp.value.length > 0;
+}
+
+function validateLead(data) {
+  const email = (data.email || '').trim();
+  const phone = (data.phone || '').replace(/\D/g, '');
+  const firstName = (data.firstName || data.first_name || '').trim();
+  const lastName = (data.lastName || data.last_name || '').trim();
+
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert('Please enter a valid email address.');
+    return false;
+  }
+  if (phone && (phone.length < 10 || phone.length > 11)) {
+    alert('Please enter a valid phone number.');
+    return false;
+  }
+  if (firstName && firstName.length < 2) {
+    alert('Please enter your full first name.');
+    return false;
+  }
+  if (lastName && lastName.length < 2) {
+    alert('Please enter your full last name.');
+    return false;
+  }
+  return true;
+}
+
 async function submitToSupabase(leadType, data) {
   const payload = {
     source: 'fsbo-site',
@@ -81,11 +112,13 @@ document.addEventListener('DOMContentLoaded', function(){
   if(!form) return;
   form.addEventListener('submit', async function(e){
     e.preventDefault();
+    if (isBot(form)) { form.style.display='none'; form.parentElement.querySelector('.form-success').style.display='block'; return; }
+    const fd = new FormData(form);
+    const data = Object.fromEntries(fd.entries());
+    if (!validateLead(data)) return;
     const btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
     btn.textContent = 'Sending...';
-    const fd = new FormData(form);
-    const data = Object.fromEntries(fd.entries());
     const ok = await submitToSupabase('contact', data);
     if (ok) {
       form.style.display = 'none';
@@ -105,11 +138,13 @@ document.addEventListener('DOMContentLoaded', function(){
   if(!form) return;
   form.addEventListener('submit', async function(e){
     e.preventDefault();
+    if (isBot(form)) { form.style.display='none'; form.parentElement.querySelector('.form-success').style.display='block'; return; }
+    const fd = new FormData(form);
+    const data = Object.fromEntries(fd.entries());
+    if (!validateLead(data)) return;
     const btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
     btn.textContent = 'Submitting...';
-    const fd = new FormData(form);
-    const data = Object.fromEntries(fd.entries());
     const ok = await submitToSupabase('buyer', data);
     if (ok) {
       form.style.display = 'none';
@@ -129,11 +164,13 @@ document.addEventListener('DOMContentLoaded', function(){
   if(!form) return;
   form.addEventListener('submit', async function(e){
     e.preventDefault();
+    if (isBot(form)) { form.style.display='none'; form.parentElement.querySelector('.form-success').style.display='block'; return; }
+    const fd = new FormData(form);
+    const data = Object.fromEntries(fd.entries());
+    if (!validateLead(data)) return;
     const btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
     btn.textContent = 'Submitting...';
-    const fd = new FormData(form);
-    const data = Object.fromEntries(fd.entries());
     const ok = await submitToSupabase('seller', data);
     if (ok) {
       form.style.display = 'none';
